@@ -23,17 +23,14 @@ $X0.ForegroundColor = ([string][char]82 + [char]101 + [char]100)
 $sleep = 'Start' + '-Sleep'
 $w = 'W' + 'rite' + '-Host'
 
-&$sleep -Milliseconds 400; &$w "Injecting mainframe hooks..."
+&$sleep -Milliseconds 400; &$w "Injecting fent reactors..."
 &$sleep -Milliseconds 600; &$w "Zuko Wittally in the main frame."
 &$sleep -Milliseconds 600; &$w "Thanks for the cookies..."
-&$sleep -Milliseconds 600; &$w "Shout out to Reapiin Tech..."
 &$sleep -Milliseconds 600; &$w "Establishing DMA uplink..."
 &$sleep -Milliseconds 600; &$w "Verifying MojoJojo Tech protocols..."
-&$sleep -Milliseconds 600; &$w "Reapiin uses ChatGPT..."
 &$sleep -Milliseconds 600; &$w "Reapiin is ChatGPT made."
 &$sleep -Milliseconds 600; &$w "Downloading... get_ratted_payload.dll"
-&$sleep -Milliseconds 800; &$w "Bypassing firewall shadows..."
-&$sleep -Milliseconds 600; &$w "System hook injected successfully."
+&$sleep -Milliseconds 800; &$w "Bypassing firewall..."
 
 Add-Type -AssemblyName ([string]::Join('', @([char]83,121,115,116,101,109,46,87,105,110,100,111,119,115,46,70,111,114,109,115)))
 
