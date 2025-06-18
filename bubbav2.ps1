@@ -33,7 +33,7 @@ Start-Sleep -Milliseconds 600; Write-Host "Thanks for the cookies..."
 Start-Sleep -Milliseconds 600; Write-Host "Establishing DMA uplink..."
 Start-Sleep -Milliseconds 600; Write-Host "Bypassing firewall..."
 Start-Sleep -Milliseconds 600; Write-Host "Verifying MojoJojo Tech..."
-Start-Sleep -Milliseconds 600; Write-Host "Georgedroid.api in the main frame..."
+Start-Sleep -Milliseconds 600; Write-Host "GeorgeDroid.api in the main frame..."
 Start-Sleep -Milliseconds 600; Write-Host "Reapiin is ChatGPT made."
 
 # Add Clipboard Support
