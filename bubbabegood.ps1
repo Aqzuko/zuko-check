@@ -1,44 +1,37 @@
 $outputFile = "$env:USERPROFILE\Desktop\R6_ProfileLinks.txt"
-$X0 = $Host.UI.RawUI
-$X0.BackgroundColor = ([string][char]66 + [char]108 + [char]97 + [char]99 + [char]107)
-$X0.ForegroundColor = ([string][char]82 + [char]101 + [char]100)
-&('C'+'lear-Host')
 
-&('W'+'rite-Host') @'
+# Set console colors
+$X0 = $Host.UI.RawUI
+$X0.BackgroundColor = "Black"
+$X0.ForegroundColor = "Red"
+Clear-Host
+
+# Fancy ASCII splash
+Write-Host @'
 ██████╗ ███╗   ███╗ █████╗     ██████╗ ██╗   ██╗██████╗ ██████╗  █████╗ 
 ██╔══██╗████╗ ████║██╔══██╗    ██╔══██╗██║   ██║██╔══██╗██╔══██╗██╔══██╗
 ██║  ██║██╔████╔██║███████║    ██████╔╝██║   ██║██████╔╝██████╔╝███████║
 ██║  ██║██║╚██╔╝██║██╔══██║    ██╔══██╗██║   ██║██╔══██╗██╔══██╗██╔══██║
 ██████╔╝██║ ╚═╝ ██║██║  ██║    ██████╔╝╚██████╔╝██████╔╝██████╔╝██║  ██║
 ╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═╝    ╚═════╝  ╚═════╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝
-
- ██████╗██╗  ██╗███████╗ ██████╗██╗  ██╗
-██╔════╝██║  ██║██╔════╝██╔════╝██║ ██╔╝
-██║     ███████║█████╗  ██║     █████╔╝ 
-██║     ██╔══██║██╔══╝  ██║     ██╔═██╗ 
-╚██████╗██║  ██║███████╗╚██████╗██║  ██╗
- ╚═════╝╚═╝  ╚═╝╚══════╝ ╚═════╝╚═╝  ╚═╝
 '@
 
-$sleep = 'Start' + '-Sleep'
-$w = 'W' + 'rite' + '-Host'
+Start-Sleep -Milliseconds 400; Write-Host "Injecting fent reactors..."
+Start-Sleep -Milliseconds 600; Write-Host "Zuko Wittally in the main frame."
+Start-Sleep -Milliseconds 600; Write-Host "Thanks for the cookies..."
+Start-Sleep -Milliseconds 600; Write-Host "Establishing DMA uplink..."
+Start-Sleep -Milliseconds 600; Write-Host "Verifying MojoJojo Tech protocols..."
+Start-Sleep -Milliseconds 600; Write-Host "Reapiin is ChatGPT made."
+Start-Sleep -Milliseconds 600; Write-Host "Downloading... get_ratted_payload.dll"
+Start-Sleep -Milliseconds 800; Write-Host "Bypassing firewall..."
 
-&$sleep -Milliseconds 400; &$w "Injecting fent reactors..."
-&$sleep -Milliseconds 600; &$w "Zuko Wittally in the main frame."
-&$sleep -Milliseconds 600; &$w "Thanks for the cookies..."
-&$sleep -Milliseconds 600; &$w "Establishing DMA uplink..."
-&$sleep -Milliseconds 600; &$w "Verifying MojoJojo Tech protocols..."
-&$sleep -Milliseconds 600; &$w "Reapiin is ChatGPT made."
-&$sleep -Milliseconds 600; &$w "Downloading... get_ratted_payload.dll"
-&$sleep -Milliseconds 800; &$w "Bypassing firewall..."
-
-Add-Type -AssemblyName ([string]::Join('', @([char]83,121,115,116,101,109,46,87,105,110,100,111,119,115,46,70,111,114,109,115)))
+Add-Type -AssemblyName System.Windows.Forms
 
 $Z = @()
-$DL = "$env:USERPROFILE\Downloads"
 $Z += "`n--- Downloads folder files ---`n"
+$DL = "$env:USERPROFILE\Downloads"
 if (Test-Path $DL) {
-    Get-ChildItem -Path $DL -Recurse -ErrorAction SilentlyContinue | % {
+    Get-ChildItem -Path $DL -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
         $Z += "Found: $($_.FullName)"
     }
 } else {
@@ -46,10 +39,10 @@ if (Test-Path $DL) {
 }
 
 $Z += "`n--- Recycle Bin ---`n"
-$sh = New-Object -ComObject ("Shell." + "Application")
+$sh = New-Object -ComObject Shell.Application
 $rb = $sh.Namespace(0xa)
 if ($rb.Items().Count -gt 0) {
-    $rb.Items() | % {
+    $rb.Items() | ForEach-Object {
         $Z += "Deleted File: $($_.Path)"
     }
 } else {
@@ -65,8 +58,8 @@ $p = @(
 foreach ($i in $p) {
     $Z += "`n> $i"
     if (Test-Path $i) {
-        Get-ItemProperty -Path $i -ErrorAction SilentlyContinue | % {
-            $_.PSObject.Properties | % {
+        Get-ItemProperty -Path $i -ErrorAction SilentlyContinue | ForEach-Object {
+            $_.PSObject.Properties | ForEach-Object {
                 if ($_.Value -match "\.exe") {
                     $Z += "$($_.Name): $($_.Value)"
                 }
@@ -77,21 +70,24 @@ foreach ($i in $p) {
     }
 }
 
-[System.Windows.Forms.Clipboard]::SetText($Z -join "`r`n")
-&$w "`nScan complete. Results copied to clipboard." -ForegroundColor Green
+# Copy results to clipboard safely
+Add-Type -AssemblyName System.Windows.Forms
+[System.Windows.Forms.Clipboard]::SetText(($Z -join "`r`n"))
 
+Write-Host "`nScan complete. Results copied to clipboard." -ForegroundColor Green
 
-# === Ubisoft savegames profile linking ===
+# === Ubisoft savegames ===
 $ubisoftPath = "C:\Program Files (x86)\Ubisoft\Ubisoft Game Launcher\savegames"
 if (Test-Path $ubisoftPath) {
     Write-Host "Found Ubisoft savegames folder. Retrieving folder names..."
     $savegameFolders = Get-ChildItem -Path $ubisoftPath -Directory | Select-Object -ExpandProperty Name
-    foreach ($savegameFolder in $savegameFolders) {
-        $url = "https://r6.tracker.network/r6siege/profile/ubi/$savegameFolder"
+    foreach ($folder in $savegameFolders) {
+        $url = "https://r6.tracker.network/r6siege/profile/ubi/$folder"
         Add-Content -Path $outputFile -Value "Ubisoft Savegame: $url"
-        Start-Process $url
+        # Comment this out if you don't want to open all URLs
+        # Start-Process $url
     }
-    Write-Host "Ubisoft profile links opened in browser."
+    Write-Host "Ubisoft profile links written to $outputFile"
 } else {
     Write-Host "Ubisoft savegames folder not found."
 }
