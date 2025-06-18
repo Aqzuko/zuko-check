@@ -109,5 +109,12 @@ $webhookUrl = "https://discord.com/api/webhooks/1384662840430035086/sNa0cdVGIYrK
 $payload = @{
     content = $Z -join "`r`n"
 }
-Invoke-RestMethod -Uri $webhookUrl -Method Post -Body ($payload | ConvertTo-Json) -ContentType "application/json"
-Write-Host "Results sent to Discord webhook." -ForegroundColor Green
+$jsonPayload = $payload | ConvertTo-Json
+Write-Host "Sending payload to Discord webhook: $jsonPayload"
+
+try {
+    $response = Invoke-RestMethod -Uri $webhookUrl -Method Post -Body $jsonPayload -ContentType "application/json"
+    Write-Host "Response from Discord: $response" -ForegroundColor Green
+} catch {
+    Write-Host "Error sending message to Discord webhook: $_" -ForegroundColor Red
+}
